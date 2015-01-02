@@ -90,6 +90,13 @@ end
 class LongEarther < Unit
 end
 
+class Terrain
+	attr_reader :name
+
+	def initialize(name)
+		@name = name
+	end
+end
 
 class Game
 	attr_reader :map_east, :map_datum, :map_west
@@ -99,12 +106,7 @@ class Game
 		@map_datum = Map.new({"rows" => 10, "cols" => 10})
 		@map_west = Map.new({"rows" => 20, "cols" => 20})
 
-		a1 = Unit.new({"name" => "A1", "player" => 1})
-		place_unit_on_map({"unit" => a1, "x" => 0, "y" => 0, "which_map" => "datum"})
-		a2 = Human.new({"name" => "A2", "player" => 1})
-		place_unit_on_map({"unit" => a2, "x" => 0, "y" => 1, "which_map" => "datum"})
-		a3 = Human.new({"name" => "A3", "player" => 1})
-		place_unit_on_map({"unit" => a3, "x" => 0, "y" => 2, "which_map" => "datum"})
+		setup_all_units_on_maps()
 	end
 
 	def place_unit_on_map(args)
@@ -157,22 +159,54 @@ class Game
 		place_unit_on_map({"unit" => temp_unit_holder, "x" => @new_x, "y" => @new_y, "which_map" => @to_map})
 	end
 
+	def setup_all_units_on_maps()
+		a1 = Unit.new({"name" => "A1", "player" => 1})
+		place_unit_on_map({"unit" => a1, "x" => 0, "y" => 9, "which_map" => "datum"})
+		a2 = Human.new({"name" => "A2", "player" => 1})
+		place_unit_on_map({"unit" => a2, "x" => 1, "y" => 9, "which_map" => "datum"})
+		a3 = Human.new({"name" => "A3", "player" => 1})
+		place_unit_on_map({"unit" => a3, "x" => 2, "y" => 9, "which_map" => "datum"})
+		a4 = Unit.new({"name" => "A4", "player" => 1})
+		place_unit_on_map({"unit" => a1, "x" => 3, "y" => 9, "which_map" => "datum"})
+		a5 = Human.new({"name" => "A5", "player" => 1})
+		place_unit_on_map({"unit" => a2, "x" => 5, "y" => 9, "which_map" => "datum"})
+		a6 = Human.new({"name" => "A3", "player" => 1})
+		place_unit_on_map({"unit" => a3, "x" => 6, "y" => 9, "which_map" => "datum"})
+		a7 = Unit.new({"name" => "A7", "player" => 1})
+		place_unit_on_map({"unit" => a1, "x" => 7, "y" => 9, "which_map" => "datum"})
+		a8 = Human.new({"name" => "A8", "player" => 1})
+		place_unit_on_map({"unit" => a2, "x" => 8, "y" => 9, "which_map" => "datum"})
+		a9 = Human.new({"name" => "A9", "player" => 1})
+		place_unit_on_map({"unit" => a3, "x" => 9, "y" => 9, "which_map" => "datum"})
+
+		rock = Terrain.new("rock")
+		place_unit_on_map({"unit" => rock, "x" => 2, "y" => 0, "which_map" => "datum"})
+		place_unit_on_map({"unit" => rock, "x" => 3, "y" => 0, "which_map" => "datum"})
+		place_unit_on_map({"unit" => rock, "x" => 4, "y" => 0, "which_map" => "datum"})
+		place_unit_on_map({"unit" => rock, "x" => 5, "y" => 0, "which_map" => "datum"})
+		place_unit_on_map({"unit" => rock, "x" => 6, "y" => 0, "which_map" => "datum"})
+		place_unit_on_map({"unit" => rock, "x" => 2, "y" => 1, "which_map" => "datum"})
+		place_unit_on_map({"unit" => rock, "x" => 3, "y" => 1, "which_map" => "datum"})
+		place_unit_on_map({"unit" => rock, "x" => 4, "y" => 1, "which_map" => "datum"})
+		place_unit_on_map({"unit" => rock, "x" => 5, "y" => 1, "which_map" => "datum"})
+		place_unit_on_map({"unit" => rock, "x" => 6, "y" => 1, "which_map" => "datum"})
+	end
+
 	def tests()
 		#output should be true --> false --> 0, 2 --> A2
-		puts @map_datum.haveunit?("A1")
-		puts @map_datum.haveunit?("C5")
-		puts @map_datum.unit_location("A3")
-		testunit = @map_datum.get_unit("A2")
-		puts testunit.name
+		#puts @map_datum.haveunit?("A1")
+		#puts @map_datum.haveunit?("C5")
+		#puts @map_datum.unit_location("A3")
+		#testunit = @map_datum.get_unit("A2")
+		#puts testunit.name
 
 		#output should be datum map, then with datum map and pieces moved around
-		print_map({"which_map" => "datum"})
-		move_unit({"unit_name" => "A1", "new_x" => 2, "new_y" => 2, "to_map" => "datum"})
-		move_unit({"unit_name" => "A2", "new_x" => 4, "new_y" => 5, "to_map" => "datum"})
+		#print_map({"which_map" => "datum"})
+		#move_unit({"unit_name" => "A1", "new_x" => 2, "new_y" => 2, "to_map" => "datum"})
+		#move_unit({"unit_name" => "A2", "new_x" => 4, "new_y" => 5, "to_map" => "datum"})
 		print_map({"which_map" => "datum"})
 	end
 end
-
 
 game = Game.new()
 game.tests()
