@@ -98,13 +98,21 @@ class Terrain
 	end
 end
 
+class Flag
+	attr_reader :player, :name
+	def initialize(player)
+		@player = player
+		@name = player.to_s + "flag"
+	end
+end
+
 class Game
 	attr_reader :map_east, :map_datum, :map_west
 
 	def initialize()
 		@map_east = Map.new({"rows" => 5, "cols" => 5})
 		@map_datum = Map.new({"rows" => 10, "cols" => 10})
-		@map_west = Map.new({"rows" => 20, "cols" => 20})
+		@map_west = Map.new({"rows" => 5, "cols" => 5})
 
 		setup_all_units_on_maps()
 	end
@@ -160,24 +168,43 @@ class Game
 	end
 
 	def setup_all_units_on_maps()
-		a1 = Unit.new({"name" => "A1", "player" => 1})
+		a1 = Human.new({"name" => "A1", "player" => 1})
 		place_unit_on_map({"unit" => a1, "x" => 0, "y" => 9, "which_map" => "datum"})
 		a2 = Human.new({"name" => "A2", "player" => 1})
 		place_unit_on_map({"unit" => a2, "x" => 1, "y" => 9, "which_map" => "datum"})
 		a3 = Human.new({"name" => "A3", "player" => 1})
 		place_unit_on_map({"unit" => a3, "x" => 2, "y" => 9, "which_map" => "datum"})
-		a4 = Unit.new({"name" => "A4", "player" => 1})
+		a4 = Human.new({"name" => "A4", "player" => 1})
 		place_unit_on_map({"unit" => a1, "x" => 3, "y" => 9, "which_map" => "datum"})
 		a5 = Human.new({"name" => "A5", "player" => 1})
 		place_unit_on_map({"unit" => a2, "x" => 5, "y" => 9, "which_map" => "datum"})
 		a6 = Human.new({"name" => "A3", "player" => 1})
 		place_unit_on_map({"unit" => a3, "x" => 6, "y" => 9, "which_map" => "datum"})
-		a7 = Unit.new({"name" => "A7", "player" => 1})
+		a7 = Human.new({"name" => "A7", "player" => 1})
 		place_unit_on_map({"unit" => a1, "x" => 7, "y" => 9, "which_map" => "datum"})
 		a8 = Human.new({"name" => "A8", "player" => 1})
 		place_unit_on_map({"unit" => a2, "x" => 8, "y" => 9, "which_map" => "datum"})
 		a9 = Human.new({"name" => "A9", "player" => 1})
 		place_unit_on_map({"unit" => a3, "x" => 9, "y" => 9, "which_map" => "datum"})
+
+		b1 = LongEarther.new({"name" => "B1", "player" => 2})
+		place_unit_on_map({"unit" => b1, "x" => 0, "y" => 0, "which_map" => "west"})
+		b2 = LongEarther.new({"name" => "B2", "player" => 2})
+		place_unit_on_map({"unit" => b1, "x" => 1, "y" => 0, "which_map" => "west"})
+		b3 = LongEarther.new({"name" => "B3", "player" => 2})
+		place_unit_on_map({"unit" => b1, "x" => 3, "y" => 0, "which_map" => "west"})
+		b4 = LongEarther.new({"name" => "B4", "player" => 2})
+		place_unit_on_map({"unit" => b1, "x" => 4, "y" => 0, "which_map" => "west"})
+		b5 = LongEarther.new({"name" => "B5", "player" => 2})
+		place_unit_on_map({"unit" => b1, "x" => 0, "y" => 1, "which_map" => "west"})
+		b6 = LongEarther.new({"name" => "B6", "player" => 2})
+		place_unit_on_map({"unit" => b1, "x" => 1, "y" => 1, "which_map" => "west"})
+		b7 = LongEarther.new({"name" => "B7", "player" => 2})
+		place_unit_on_map({"unit" => b1, "x" => 2, "y" => 1, "which_map" => "west"})
+		b8 = LongEarther.new({"name" => "B8", "player" => 2})
+		place_unit_on_map({"unit" => b1, "x" => 3, "y" => 1, "which_map" => "west"})
+		b9 = LongEarther.new({"name" => "B9", "player" => 2})
+		place_unit_on_map({"unit" => b1, "x" => 4, "y" => 1, "which_map" => "west"})
 
 		rock = Terrain.new("rock")
 		place_unit_on_map({"unit" => rock, "x" => 2, "y" => 0, "which_map" => "datum"})
@@ -190,6 +217,11 @@ class Game
 		place_unit_on_map({"unit" => rock, "x" => 4, "y" => 1, "which_map" => "datum"})
 		place_unit_on_map({"unit" => rock, "x" => 5, "y" => 1, "which_map" => "datum"})
 		place_unit_on_map({"unit" => rock, "x" => 6, "y" => 1, "which_map" => "datum"})
+
+		p1flag = Flag.new(1)
+		place_unit_on_map({"unit" => p1flag, "x" => 4, "y" => 9, "which_map" => "datum"})
+		p2flag = Flag.new(2)
+		place_unit_on_map({"unit" => p2flag, "x" => 2, "y" => 0, "which_map" => "west"})
 	end
 
 	def tests()
@@ -204,7 +236,10 @@ class Game
 		#print_map({"which_map" => "datum"})
 		#move_unit({"unit_name" => "A1", "new_x" => 2, "new_y" => 2, "to_map" => "datum"})
 		#move_unit({"unit_name" => "A2", "new_x" => 4, "new_y" => 5, "to_map" => "datum"})
+		print_map({"which_map" => "west"})
 		print_map({"which_map" => "datum"})
+		print_map({"which_map" => "east"})
+
 	end
 end
 
