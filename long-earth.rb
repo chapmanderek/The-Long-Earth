@@ -1,118 +1,42 @@
-class Map
-	attr_reader :rows, :cols, :map
+attr_reader :squaresize, :title_text_size, :square_text_size, :chess_piece_image, :background_color, :player1_color, :player2_color, :redraw, :game
 
-	def initialize(args)
-		@rows = args['rows'].to_i
-		@cols = args['cols'].to_i
-		@map = Array.new(@rows) {Array.new(@cols)}
-	end
+def setup
+ 	size 1100, 600  
+ 	@squaresize = 40
+ 	@title_text_size = 20
+ 	@square_text_size = 10
+ 	@background_color = color(100, 100, 100)
+ 	@current_starting_x = 5
+	@current_starting_y = 25
+	@board_padding = 25
+ 	@player1_color = color(255, 10, 10)
+ 	@player2_color = color(10, 10, 255)
+ 	background(@background_color)
+ 	textAlign(CENTER, CENTER)
 
-	def place_unit(args)
-		@unit = args['unit']
-		@row = args['y']
-		@col = args['x']
-		@map[@row][@col] = @unit
-	end
-
-	def haveunit?(find_unit)
-		have = false
-		@find_unit = find_unit
-
-		0.upto(@rows-1) do |x|
-			0.upto(@cols-1) do |y|
-				if(@map[x][y] != nil)
-					if(@map[x][y].name == @find_unit)
-						have = true
-					end
-				end
-			end
-		end
-		return have
-	end
-
-	def unit_location(find_unit)
-		@find_unit = find_unit
-
-		0.upto(@rows-1) do |x|
-			0.upto(@cols-1) do |y|
-				if(@map[x][y] != nil)
-					if(@map[x][y].name == @find_unit)
-						return x, y
-					end
-				end
-			end
-		end
-		return false, false
-	end
-
-	def get_unit(unit_name)
-		@unit_name = unit_name
-		x, y = unit_location(@unit_name)
-		return @map[x][y]
-	end
-
-	def remove_unit(unit_name)
-		@unit_name = unit_name
-		x, y = unit_location(@unit_name)
-		@map[x][y] = nil
-	end
-
-	def print_map()
-		0.upto(@rows-1) do |x|
-			0.upto(@cols-1) do |y|
-				if(@map[x][y] == nil)
-					print " 0 "
-				else
-					print @map[x][y].name
-					print " "
-				end
-				print "|"
-			end
-			puts 
-		end
-		puts "\n \n"
-	end
+ 	all_args = {"squaresize" => @squaresize, "square_text_size" => @square_text_size, "title_text_size" => @title_text_size}
+ 	@game = Game.new(all_args)
+ 	@redraw = true
 end
 
-class Unit
-	attr_reader :movement_speed, :attack_power, :name, :player
-	def initialize(args)
-		@name = args['name']
-		@movement_speed = 1
-		@attack_power = 1
-		@player = args['player']
-	end
-end
-
-class Human < Unit
-end
-
-class LongEarther < Unit
-end
-
-class Terrain
-	attr_reader :name
-
-	def initialize(name)
-		@name = name
-	end
-end
-
-class Flag
-	attr_reader :player, :name
-	def initialize(player)
-		@player = player
-		@name = player.to_s + "flag"
-	end
+def draw
+	if(redraw == true)
+  		background(@background_color)
+  		@game.print_all_maps()
+  		@redraw = false
+  	end
 end
 
 class Game
-	attr_reader :map_east, :map_datum, :map_west
+	attr_reader :map_east, :map_datum, :map_west, :all_args, :title_text_size, :squaresize
 
-	def initialize()
-		@map_east = Map.new({"rows" => 5, "cols" => 5})
-		@map_datum = Map.new({"rows" => 10, "cols" => 10})
-		@map_west = Map.new({"rows" => 5, "cols" => 5})
+	def initialize(all_args)
+		@all_args = all_args
+		@title_text_size = all_args["title_text_size"]
+		@squaresize = all_args["squaresize"]
+		@map_east = Map.new({"rows" => 5, "cols" => 5, "squaresize" => all_args["squaresize"], "square_text_size" => all_args["square_text_size"]})
+		@map_datum = Map.new({"rows" => 10, "cols" => 10, "squaresize" => all_args["squaresize"], "square_text_size" => all_args["square_text_size"]})
+		@map_west = Map.new({"rows" => 5, "cols" => 5, "squaresize" => all_args["squaresize"], "square_text_size" => all_args["square_text_size"]})
 
 		setup_all_units_on_maps()
 	end
@@ -130,7 +54,36 @@ class Game
 		end
 	end
 
-	def print_map(args)
+	def print_all_maps()
+		@current_starting_x = 5
+		@current_starting_y = 25
+		@board_padding = 25
+
+		#print earth west
+		args = {"starting_x" => @current_starting_x, "starting_y" => @current_starting_y}
+		@map_west.print_map(args)
+		fill(255, 0, 0)
+		textSize(@title_text_size)
+		text("Earth West", (@map_west.rows * @squaresize) / 2 + @current_starting_x, @current_starting_y - 15)
+
+		#print earth datum
+		@current_starting_x = @map_west.rows * @squaresize + @current_starting_x + @board_padding
+		args = {"starting_x" => @current_starting_x, "starting_y" => @current_starting_y}
+		@map_datum.print_map(args)
+		fill(100,153,0)
+		textSize(@title_text_size)
+		text("Datum Earth", (@map_datum.rows * @squaresize) / 2 + @current_starting_x, @current_starting_y - 15)
+
+		#print earth east
+		@current_starting_x = @map_datum.rows * @squaresize + @current_starting_x + @board_padding
+		args = {"starting_x" => @current_starting_x, "starting_y" => @current_starting_y}
+		@map_east.print_map(args)
+		fill(255,153,150)
+		textSize(@title_text_size)
+		text("Earth East", (@map_east.rows * @squaresize) / 2 + @current_starting_x, @current_starting_y - 15)
+	end
+
+	def print_map(args)  #defunct
 		@which_map = args['which_map']
 
 		case @which_map
@@ -217,6 +170,12 @@ class Game
 		place_unit_on_map({"unit" => rock, "x" => 4, "y" => 1, "which_map" => "datum"})
 		place_unit_on_map({"unit" => rock, "x" => 5, "y" => 1, "which_map" => "datum"})
 		place_unit_on_map({"unit" => rock, "x" => 6, "y" => 1, "which_map" => "datum"})
+		place_unit_on_map({"unit" => rock, "x" => 1, "y" => 4, "which_map" => "west"})
+		place_unit_on_map({"unit" => rock, "x" => 2, "y" => 4, "which_map" => "west"})
+		place_unit_on_map({"unit" => rock, "x" => 3, "y" => 4, "which_map" => "west"})
+		place_unit_on_map({"unit" => rock, "x" => 1, "y" => 4, "which_map" => "east"})
+		place_unit_on_map({"unit" => rock, "x" => 2, "y" => 4, "which_map" => "east"})
+		place_unit_on_map({"unit" => rock, "x" => 3, "y" => 4, "which_map" => "east"})
 
 		p1flag = Flag.new(1)
 		place_unit_on_map({"unit" => p1flag, "x" => 4, "y" => 9, "which_map" => "datum"})
@@ -236,12 +195,141 @@ class Game
 		#print_map({"which_map" => "datum"})
 		#move_unit({"unit_name" => "A1", "new_x" => 2, "new_y" => 2, "to_map" => "datum"})
 		#move_unit({"unit_name" => "A2", "new_x" => 4, "new_y" => 5, "to_map" => "datum"})
-		print_map({"which_map" => "west"})
-		print_map({"which_map" => "datum"})
-		print_map({"which_map" => "east"})
-
+		#print_map({"which_map" => "west"})
+		#print_map({"which_map" => "datum"})
+		#print_map({"which_map" => "east"})
 	end
 end
 
-game = Game.new()
-game.tests()
+class Map
+	attr_reader :rows, :cols, :map, :squaresize, :square_text_size
+#-->
+	def initialize(args)
+		@rows = args["rows"].to_i
+		@cols = args["cols"].to_i
+		@map = Array.new(@rows) {Array.new(@cols)}
+		@square_text_size = args["square_text_size"]
+		@squaresize = args["squaresize"]
+	end
+
+	def place_unit(args)
+		@unit = args['unit']
+		@row = args['y']
+		@col = args['x']
+		@map[@row][@col] = @unit
+	end
+
+	def haveunit?(find_unit)
+		have = false
+		@find_unit = find_unit
+
+		0.upto(@rows-1) do |x|
+			0.upto(@cols-1) do |y|
+				if(@map[x][y] != nil)
+					if(@map[x][y].name == @find_unit)
+						have = true
+					end
+				end
+			end
+		end
+		return have
+	end
+
+	def unit_location(find_unit)
+		@find_unit = find_unit
+
+		0.upto(@rows-1) do |x|
+			0.upto(@cols-1) do |y|
+				if(@map[x][y] != nil)
+					if(@map[x][y].name == @find_unit)
+						return x, y
+					end
+				end
+			end
+		end
+		return false, false
+	end
+
+	def get_unit(unit_name)
+		@unit_name = unit_name
+		x, y = unit_location(@unit_name)
+		return @map[x][y]
+	end
+
+	def remove_unit(unit_name)
+		@unit_name = unit_name
+		x, y = unit_location(@unit_name)
+		@map[x][y] = nil
+	end
+
+	def print_map(args)
+		@starting_x = args["starting_x"]
+		@starting_y = args["starting_y"]
+		textSize(@square_text_size)
+
+		0.upto(@rows-1) do |x|
+			0.upto(@cols-1) do |y|
+					@square_location = {"x" => (x * @squaresize + @starting_x), "y" => (y * @squaresize + @starting_y)}
+					if( ( ( (x % 2) == 0) && ( (y % 2) == 0)) || ( ( (x % 2) != 0) && ( (y % 2) != 0) ) )
+						fill(255)
+						rect(@square_location["x"], @square_location["y"], @squaresize, @squaresize)
+						fill(125)
+						text("#{x}, #{y}", @square_location["x"] + (@squaresize/2), @square_location["y"] + (@squaresize/2))
+					else
+						fill(1)
+						rect(@square_location["x"], @square_location["y"], @squaresize, @squaresize)
+						fill(125)
+						text("#{x}, #{y}", @square_location["x"] + (@squaresize/2), @square_location["y"] + (@squaresize/2))
+					end	
+			end
+		end	
+
+=begin
+		0.upto(@rows-1) do |x|
+			0.upto(@cols-1) do |y|
+				if(@map[x][y] == nil)
+					print " 0 "
+				else
+					print @map[x][y].name
+					print " "
+				end
+				print "|"
+			end
+			puts 
+		end
+		puts "\n \n"
+=end
+	end
+end
+
+class Unit
+	attr_reader :movement_speed, :attack_power, :name, :player
+	def initialize(args)
+		@name = args['name']
+		@movement_speed = 1
+		@attack_power = 1
+		@player = args['player']
+	end
+end
+
+class Human < Unit
+end
+
+class LongEarther < Unit
+end
+
+class Terrain
+	attr_reader :name
+
+	def initialize(name)
+		@name = name
+	end
+end
+
+class Flag
+	attr_reader :player, :name
+	def initialize(player)
+		@player = player
+		@name = player.to_s + "flag"
+	end
+end
