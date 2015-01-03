@@ -274,12 +274,16 @@ class Map
 						fill(255)
 						rect(@square_location["x"], @square_location["y"], @squaresize, @squaresize)
 						fill(125)
-						text("#{x}, #{y}", @square_location["x"] + (@squaresize/2), @square_location["y"] + (@squaresize/2))
+						if(@map[x][y] != nil)
+							text(@map[x][y].name, @square_location["x"] + (@squaresize/2), @square_location["y"] + (@squaresize/2))
+						end
 					else
 						fill(1)
 						rect(@square_location["x"], @square_location["y"], @squaresize, @squaresize)
 						fill(125)
-						text("#{x}, #{y}", @square_location["x"] + (@squaresize/2), @square_location["y"] + (@squaresize/2))
+						if(@map[x][y] != nil)
+							text(@map[x][y].name, @square_location["x"] + (@squaresize/2), @square_location["y"] + (@squaresize/2))
+						end
 					end	
 			end
 		end	
