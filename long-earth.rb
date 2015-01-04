@@ -1,22 +1,16 @@
-attr_reader :squaresize, :title_text_size, :square_text_size, :chess_piece_image, :background_color, :player1_color, :player2_color, :redraw, :game
+attr_reader :squaresize, :title_text_size, :chess_piece_image, :background_color, :player1_color, :player2_color, :redraw, :game
 
 def setup
  	size 1100, 600  
- 	@squaresize = 40
- 	@title_text_size = 20
- 	@square_text_size = 10
  	@background_color = color(100, 100, 100)
- 	@current_starting_x = 5
-	@current_starting_y = 25
-	@board_padding = 25
- 	@player1_color = color(255, 10, 10)
- 	@player2_color = color(10, 10, 255)
  	background(@background_color)
  	textAlign(CENTER, CENTER)
 
- 	all_args = {"squaresize" => @squaresize, "square_text_size" => @square_text_size, "title_text_size" => @title_text_size}
- 	@game = Game.new(all_args)
+ 	@game = Game.new()
  	@redraw = true
+
+ 	@player1_color = color(255, 10, 10)
+ 	@player2_color = color(10, 10, 255)
 end
 
 def draw
@@ -28,15 +22,14 @@ def draw
 end
 
 class Game
-	attr_reader :map_east, :map_datum, :map_west, :all_args, :title_text_size, :squaresize
+	BOARD_PADDING = 25
+	TITLE_TEXT_SIZE = 20
+	attr_reader :map_east, :map_datum, :map_west
 
-	def initialize(all_args)
-		@all_args = all_args
-		@title_text_size = all_args["title_text_size"]
-		@squaresize = all_args["squaresize"]
-		@map_east = Map.new({"rows" => 5, "cols" => 5, "squaresize" => all_args["squaresize"], "square_text_size" => all_args["square_text_size"]})
-		@map_datum = Map.new({"rows" => 10, "cols" => 10, "squaresize" => all_args["squaresize"], "square_text_size" => all_args["square_text_size"]})
-		@map_west = Map.new({"rows" => 5, "cols" => 5, "squaresize" => all_args["squaresize"], "square_text_size" => all_args["square_text_size"]})
+	def initialize()
+		@map_east = Map.new({"rows" => 5, "cols" => 5})
+		@map_datum = Map.new({"rows" => 10, "cols" => 10})
+		@map_west = Map.new({"rows" => 5, "cols" => 5})
 
 		setup_all_units_on_maps()
 	end
@@ -57,30 +50,29 @@ class Game
 	def print_all_maps()
 		@current_starting_x = 5
 		@current_starting_y = 25
-		@board_padding = 25
 
 		#print earth west
 		args = {"starting_x" => @current_starting_x, "starting_y" => @current_starting_y}
 		@map_west.print_map(args)
 		fill(255, 0, 0)
-		textSize(@title_text_size)
-		text("Earth West", (@map_west.rows * @squaresize) / 2 + @current_starting_x, @current_starting_y - 15)
+		textSize(TITLE_TEXT_SIZE)
+		text("Earth West", (@map_west.rows * Map::SQUARE_SIZE) / 2 + @current_starting_x, @current_starting_y - 15)
 
 		#print earth datum
-		@current_starting_x = @map_west.rows * @squaresize + @current_starting_x + @board_padding
+		@current_starting_x = @map_west.rows * Map::SQUARE_SIZE + @current_starting_x + BOARD_PADDING
 		args = {"starting_x" => @current_starting_x, "starting_y" => @current_starting_y}
 		@map_datum.print_map(args)
 		fill(100,153,0)
-		textSize(@title_text_size)
-		text("Datum Earth", (@map_datum.rows * @squaresize) / 2 + @current_starting_x, @current_starting_y - 15)
+		textSize(TITLE_TEXT_SIZE)
+		text("Datum Earth", (@map_datum.rows * Map::SQUARE_SIZE) / 2 + @current_starting_x, @current_starting_y - 15)
 
 		#print earth east
-		@current_starting_x = @map_datum.rows * @squaresize + @current_starting_x + @board_padding
+		@current_starting_x = @map_datum.rows * Map::SQUARE_SIZE + @current_starting_x + BOARD_PADDING
 		args = {"starting_x" => @current_starting_x, "starting_y" => @current_starting_y}
 		@map_east.print_map(args)
 		fill(255,153,150)
-		textSize(@title_text_size)
-		text("Earth East", (@map_east.rows * @squaresize) / 2 + @current_starting_x, @current_starting_y - 15)
+		textSize(TITLE_TEXT_SIZE)
+		text("Earth East", (@map_east.rows * Map::SQUARE_SIZE) / 2 + @current_starting_x, @current_starting_y - 15)
 	end
 
 	def print_map(args)  #defunct
@@ -202,20 +194,21 @@ class Game
 end
 
 class Map
-	attr_reader :rows, :cols, :map, :squaresize, :square_text_size
-#-->
+	SQUARE_SIZE = 40
+	SQUARE_TEXT_SIZE = 10
+	attr_reader :rows, :cols, :map
+	
+
 	def initialize(args)
 		@rows = args["rows"].to_i
 		@cols = args["cols"].to_i
 		@map = Array.new(@rows) {Array.new(@cols)}
-		@square_text_size = args["square_text_size"]
-		@squaresize = args["squaresize"]
 	end
 
 	def place_unit(args)
 		@unit = args['unit']
-		@row = args['y']
-		@col = args['x']
+		@row = args['x']
+		@col = args['y']
 		@map[@row][@col] = @unit
 	end
 
@@ -265,44 +258,31 @@ class Map
 	def print_map(args)
 		@starting_x = args["starting_x"]
 		@starting_y = args["starting_y"]
-		textSize(@square_text_size)
+		textSize(SQUARE_TEXT_SIZE)
 
 		0.upto(@rows-1) do |x|
 			0.upto(@cols-1) do |y|
-					@square_location = {"x" => (x * @squaresize + @starting_x), "y" => (y * @squaresize + @starting_y)}
-					if( ( ( (x % 2) == 0) && ( (y % 2) == 0)) || ( ( (x % 2) != 0) && ( (y % 2) != 0) ) )
-						fill(255)
-						rect(@square_location["x"], @square_location["y"], @squaresize, @squaresize)
-						fill(125)
-						if(@map[x][y] != nil)
-							text(@map[x][y].name, @square_location["x"] + (@squaresize/2), @square_location["y"] + (@squaresize/2))
-						end
-					else
-						fill(1)
-						rect(@square_location["x"], @square_location["y"], @squaresize, @squaresize)
-						fill(125)
-						if(@map[x][y] != nil)
-							text(@map[x][y].name, @square_location["x"] + (@squaresize/2), @square_location["y"] + (@squaresize/2))
-						end
-					end	
+				@square_location = {"x" => (x * SQUARE_SIZE + @starting_x), "y" => (y * SQUARE_SIZE + @starting_y)}
+				if(both_evens_or_odds?(x, y))
+					fill_square({"fill" => 255, "x" => x, "y" => y})
+				else
+					fill_square({"fill" => 1, "x" => x, "y" => y})
+				end					
 			end
 		end	
+	end
 
-=begin
-		0.upto(@rows-1) do |x|
-			0.upto(@cols-1) do |y|
-				if(@map[x][y] == nil)
-					print " 0 "
-				else
-					print @map[x][y].name
-					print " "
-				end
-				print "|"
-			end
-			puts 
+	def both_evens_or_odds?(x, y)
+		(((x % 2) == 0) && ( (y % 2) == 0)) || ( ( (x % 2) != 0) && ( (y % 2) != 0) )
+	end
+
+	def fill_square(args)
+		fill(args["fill"])
+		rect(@square_location["x"], @square_location["y"], SQUARE_SIZE, SQUARE_SIZE)
+		fill(125)
+		if(@map[args["x"]][args["y"]] != nil)
+			text(@map[args["x"]][args["y"]].name, @square_location["x"] + (SQUARE_SIZE/2), @square_location["y"] + (SQUARE_SIZE/2))
 		end
-		puts "\n \n"
-=end
 	end
 end
 
