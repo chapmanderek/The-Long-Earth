@@ -1,4 +1,4 @@
-attr_reader :squaresize, :title_text_size, :chess_piece_image, :background_color, :player1_color, :player2_color, :redraw, :game
+attr_reader :background_color, :player1_color, :player2_color, :redraw, :game
 
 def setup
  	size 1100, 600  
@@ -21,9 +21,16 @@ def draw
   	end
 end
 
+def mouseClicked
+	puts "Mouse clicked at #{mouseX}, #{mouseY}"
+	game.mouse_clicked(mouseX, mouseY)
+
+end
+
 class Game
 	BOARD_PADDING = 25
-	TITLE_TEXT_SIZE = 20
+	TITLE_TEXT_SIZE = 30
+	TITLE_TEXT_Y = 20
 	attr_reader :map_east, :map_datum, :map_west
 
 	def initialize()
@@ -49,14 +56,14 @@ class Game
 
 	def print_all_maps()
 		@current_starting_x = 5
-		@current_starting_y = 25
+		@current_starting_y = 40
 
 		#print earth west
 		args = {"starting_x" => @current_starting_x, "starting_y" => @current_starting_y}
 		@map_west.print_map(args)
 		fill(255, 0, 0)
 		textSize(TITLE_TEXT_SIZE)
-		text("Earth West", (@map_west.rows * Map::SQUARE_SIZE) / 2 + @current_starting_x, @current_starting_y - 15)
+		text("Earth West", (@map_west.rows * Map::SQUARE_SIZE) / 2 + @current_starting_x, @current_starting_y - TITLE_TEXT_Y)
 
 		#print earth datum
 		@current_starting_x = @map_west.rows * Map::SQUARE_SIZE + @current_starting_x + BOARD_PADDING
@@ -64,7 +71,7 @@ class Game
 		@map_datum.print_map(args)
 		fill(100,153,0)
 		textSize(TITLE_TEXT_SIZE)
-		text("Datum Earth", (@map_datum.rows * Map::SQUARE_SIZE) / 2 + @current_starting_x, @current_starting_y - 15)
+		text("Datum Earth", (@map_datum.rows * Map::SQUARE_SIZE) / 2 + @current_starting_x, @current_starting_y - TITLE_TEXT_Y)
 
 		#print earth east
 		@current_starting_x = @map_datum.rows * Map::SQUARE_SIZE + @current_starting_x + BOARD_PADDING
@@ -72,7 +79,7 @@ class Game
 		@map_east.print_map(args)
 		fill(255,153,150)
 		textSize(TITLE_TEXT_SIZE)
-		text("Earth East", (@map_east.rows * Map::SQUARE_SIZE) / 2 + @current_starting_x, @current_starting_y - 15)
+		text("Earth East", (@map_east.rows * Map::SQUARE_SIZE) / 2 + @current_starting_x, @current_starting_y - TITLE_TEXT_Y)
 	end
 
 	def print_map(args)  #defunct
@@ -175,6 +182,41 @@ class Game
 		place_unit_on_map({"unit" => p2flag, "x" => 2, "y" => 0, "which_map" => "west"})
 	end
 
+	def mouse_clicked(x, y)
+		which_board_was_clicked(x, y)
+	end
+
+	def which_board_was_clicked(x, y)
+		@x = x
+		@y = y
+		@top_left = Array.new(2)
+		@bottom_right = Array.new(2)
+		@top_left[0] = @map_west.starting_x
+		@top_left[1] = @map_west.starting_y
+		@bottom_right[0] = @top_left[0] + (@map_west.rows * Map::SQUARE_SIZE)
+		@bottom_right[1] = @top_left[1] + (@map_west.cols * Map::SQUARE_SIZE)
+		if(x.between?(@top_left[0], @bottom_right[0]) && y.between?(@top_left[1], @bottom_right[1]))
+			puts "clicked on map west"
+		end
+		
+		@top_left[0] = @map_datum.starting_x
+		@top_left[1] = @map_datum.starting_y
+		@bottom_right[0] = @top_left[0] + (@map_datum.rows * Map::SQUARE_SIZE)
+		@bottom_right[1] = @top_left[1] + (@map_datum.cols * Map::SQUARE_SIZE)
+		if(x.between?(@top_left[0], @bottom_right[0]) && y.between?(@top_left[1], @bottom_right[1]))
+				puts "clicked on map datum"
+		end	
+
+		@top_left[0] = @map_east.starting_x
+		@top_left[1] = @map_east.starting_y
+		@bottom_right[0] = @top_left[0] + (@map_east.rows * Map::SQUARE_SIZE)
+		@bottom_right[1] = @top_left[1] + (@map_east.cols * Map::SQUARE_SIZE)
+		if(x.between?(@top_left[0], @bottom_right[0]) && y.between?(@top_left[1], @bottom_right[1]))
+				puts "clicked on map east"
+		end	
+
+	end
+
 	def tests()
 		#output should be true --> false --> 0, 2 --> A2
 		#puts @map_datum.haveunit?("A1")
@@ -196,8 +238,7 @@ end
 class Map
 	SQUARE_SIZE = 40
 	SQUARE_TEXT_SIZE = 10
-	attr_reader :rows, :cols, :map
-	
+	attr_reader :rows, :cols, :map, :top, :starting_x, :starting_y
 
 	def initialize(args)
 		@rows = args["rows"].to_i
@@ -265,6 +306,7 @@ class Map
 				@square_location = {"x" => (x * SQUARE_SIZE + @starting_x), "y" => (y * SQUARE_SIZE + @starting_y)}
 				if(both_evens_or_odds?(x, y))
 					fill_square({"fill" => 255, "x" => x, "y" => y})
+
 				else
 					fill_square({"fill" => 1, "x" => x, "y" => y})
 				end					
@@ -281,18 +323,40 @@ class Map
 		rect(@square_location["x"], @square_location["y"], SQUARE_SIZE, SQUARE_SIZE)
 		fill(125)
 		if(@map[args["x"]][args["y"]] != nil)
-			text(@map[args["x"]][args["y"]].name, @square_location["x"] + (SQUARE_SIZE/2), @square_location["y"] + (SQUARE_SIZE/2))
+			@map[args["x"]][args["y"]].set_location_on_screen(@square_location["x"], @square_location["y"])
+			text(@map[args["x"]][args["y"]].name, @square_location["x"] + (SQUARE_SIZE/2), @square_location["y"] + (SQUARE_SIZE/2) - 10)
+			text(@map[args["x"]][args["y"]].location_on_screen_x, @square_location["x"] + (SQUARE_SIZE/2), @square_location["y"] + (SQUARE_SIZE/2))
+			text(@map[args["x"]][args["y"]].location_on_screen_y, @square_location["x"] + (SQUARE_SIZE/2), @square_location["y"] + (SQUARE_SIZE/2) + 10)
 		end
 	end
 end
 
-class Unit
+class Game_piece
+	attr_reader :location_on_screen_x, :location_on_screen_y
+	def initialize(args)
+		@location_on_screen_x = 0
+		@location_on_screen_y = 0
+	end
+
+		def set_location_on_screen(x, y)
+		@location_on_screen_x = x
+		@location_on_screen_y = y
+	end
+
+	def get_location_on_screen
+		return @location_on_screen_x, @location_on_screen_y
+	end
+end
+
+class Unit < Game_piece
 	attr_reader :movement_speed, :attack_power, :name, :player
+
 	def initialize(args)
 		@name = args['name']
 		@movement_speed = 1
 		@attack_power = 1
 		@player = args['player']
+
 	end
 end
 
@@ -302,15 +366,15 @@ end
 class LongEarther < Unit
 end
 
-class Terrain
+class Terrain < Game_piece
 	attr_reader :name
 
 	def initialize(name)
 		@name = name
-	end
+	end  # <-- refactor to simplify game piece structure and so that they take similar arguments
 end
 
-class Flag
+class Flag < Game_piece
 	attr_reader :player, :name
 	def initialize(player)
 		@player = player
