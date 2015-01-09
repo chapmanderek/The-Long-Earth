@@ -250,11 +250,33 @@ class Game
 		if(@board_clicked == "west")
 			0.upto(@map_west.rows-1) do |square_x|
 				0.upto(@map_west.cols-1) do |square_y|
-					if(@map_west.map[square_x][square_y] != nil)
-						#puts "square = #{square_x}, #{square_y} location = #{@map_west.map[square_x][square_y].location_on_screen_x}, #{@map_west.map[square_x][square_y].location_on_screen_y}"
-						
+					if(@map_west.map[square_x][square_y] != nil)						
 						if(@click_x.between?(@map_west.map[square_x][square_y].location_on_screen_x, @map_west.map[square_x][square_y].location_on_screen_x + Map::SQUARE_SIZE) && @click_y.between?(@map_west.map[square_x][square_y].location_on_screen_y, @map_west.map[square_x][square_y].location_on_screen_y + Map::SQUARE_SIZE))
 							puts "246 clicked map west #{square_x}, #{square_y} unit = #{@map_west.map[square_x][square_y].name}"
+						end
+					end
+				end
+			end
+		end
+
+		if(@board_clicked == "datum")
+			0.upto(@map_datum.rows-1) do |square_x|
+				0.upto(@map_datum.cols-1) do |square_y|
+					if(@map_datum.map[square_x][square_y] != nil)						
+						if(@click_x.between?(@map_datum.map[square_x][square_y].location_on_screen_x, @map_datum.map[square_x][square_y].location_on_screen_x + Map::SQUARE_SIZE) && @click_y.between?(@map_datum.map[square_x][square_y].location_on_screen_y, @map_datum.map[square_x][square_y].location_on_screen_y + Map::SQUARE_SIZE))
+							puts "246 clicked map datum #{square_x}, #{square_y} unit = #{@map_datum.map[square_x][square_y].name}"
+						end
+					end
+				end
+			end
+		end
+
+		if(@board_clicked == "east")
+			0.upto(@map_east.rows-1) do |square_x|
+				0.upto(@map_east.cols-1) do |square_y|
+					if(@map_east.map[square_x][square_y] != nil)						
+						if(@click_x.between?(@map_east.map[square_x][square_y].location_on_screen_x, @map_east.map[square_x][square_y].location_on_screen_x + Map::SQUARE_SIZE) && @click_y.between?(@map_east.map[square_x][square_y].location_on_screen_y, @map_east.map[square_x][square_y].location_on_screen_y + Map::SQUARE_SIZE))
+							puts "246 clicked map east #{square_x}, #{square_y} unit = #{@map_east.map[square_x][square_y].name}"
 						end
 					end
 				end
