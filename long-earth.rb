@@ -164,23 +164,38 @@ class Game
 		b9 = LongEarther.new({"name" => "B9", "player" => 2})
 		place_unit_on_map({"unit" => b9, "x" => 4, "y" => 1, "which_map" => "west"})
 
-		rock = Terrain.new("rock")
-		place_unit_on_map({"unit" => rock, "x" => 2, "y" => 0, "which_map" => "datum"})
-		place_unit_on_map({"unit" => rock, "x" => 3, "y" => 0, "which_map" => "datum"})
-		place_unit_on_map({"unit" => rock, "x" => 4, "y" => 0, "which_map" => "datum"})
-		place_unit_on_map({"unit" => rock, "x" => 5, "y" => 0, "which_map" => "datum"})
-		place_unit_on_map({"unit" => rock, "x" => 6, "y" => 0, "which_map" => "datum"})
-		place_unit_on_map({"unit" => rock, "x" => 2, "y" => 1, "which_map" => "datum"})
-		place_unit_on_map({"unit" => rock, "x" => 3, "y" => 1, "which_map" => "datum"})
-		place_unit_on_map({"unit" => rock, "x" => 4, "y" => 1, "which_map" => "datum"})
-		place_unit_on_map({"unit" => rock, "x" => 5, "y" => 1, "which_map" => "datum"})
-		place_unit_on_map({"unit" => rock, "x" => 6, "y" => 1, "which_map" => "datum"})
-		place_unit_on_map({"unit" => rock, "x" => 1, "y" => 4, "which_map" => "west"})
-		place_unit_on_map({"unit" => rock, "x" => 2, "y" => 4, "which_map" => "west"})
-		place_unit_on_map({"unit" => rock, "x" => 3, "y" => 4, "which_map" => "west"})
-		place_unit_on_map({"unit" => rock, "x" => 1, "y" => 4, "which_map" => "east"})
-		place_unit_on_map({"unit" => rock, "x" => 2, "y" => 4, "which_map" => "east"})
-		place_unit_on_map({"unit" => rock, "x" => 3, "y" => 4, "which_map" => "east"})
+		rock1 = Terrain.new("rock")
+		place_unit_on_map({"unit" => rock1, "x" => 2, "y" => 0, "which_map" => "datum"})
+		rock2 = Terrain.new("rock")
+		place_unit_on_map({"unit" => rock2, "x" => 3, "y" => 0, "which_map" => "datum"})
+		rock3 = Terrain.new("rock")
+		place_unit_on_map({"unit" => rock3, "x" => 4, "y" => 0, "which_map" => "datum"})
+		rock4 = Terrain.new("rock")
+		place_unit_on_map({"unit" => rock4, "x" => 5, "y" => 0, "which_map" => "datum"})
+		rock5 = Terrain.new("rock")
+		place_unit_on_map({"unit" => rock5, "x" => 6, "y" => 0, "which_map" => "datum"})
+		rock6 = Terrain.new("rock")
+		place_unit_on_map({"unit" => rock6, "x" => 2, "y" => 1, "which_map" => "datum"})
+		rock7 = Terrain.new("rock")
+		place_unit_on_map({"unit" => rock7, "x" => 3, "y" => 1, "which_map" => "datum"})
+		rock8 = Terrain.new("rock")
+		place_unit_on_map({"unit" => rock8, "x" => 4, "y" => 1, "which_map" => "datum"})
+		rock9 = Terrain.new("rock")
+		place_unit_on_map({"unit" => rock9, "x" => 5, "y" => 1, "which_map" => "datum"})
+		rock10 = Terrain.new("rock")
+		place_unit_on_map({"unit" => rock10, "x" => 6, "y" => 1, "which_map" => "datum"})
+		rock11 = Terrain.new("rock")
+		place_unit_on_map({"unit" => rock11, "x" => 1, "y" => 4, "which_map" => "west"})
+		rock12 = Terrain.new("rock")
+		place_unit_on_map({"unit" => rock12, "x" => 2, "y" => 4, "which_map" => "west"})
+		rock13 = Terrain.new("rock")
+		place_unit_on_map({"unit" => rock13, "x" => 3, "y" => 4, "which_map" => "west"})
+		rock14 = Terrain.new("rock")
+		place_unit_on_map({"unit" => rock14, "x" => 1, "y" => 4, "which_map" => "east"})
+		rock15 = Terrain.new("rock")
+		place_unit_on_map({"unit" => rock15, "x" => 2, "y" => 4, "which_map" => "east"})
+		rock16 = Terrain.new("rock")
+		place_unit_on_map({"unit" => rock16, "x" => 3, "y" => 4, "which_map" => "east"})
 
 		p1flag = Flag.new(1)
 		place_unit_on_map({"unit" => p1flag, "x" => 4, "y" => 9, "which_map" => "datum"})
@@ -191,9 +206,7 @@ class Game
 	def mouse_clicked(x, y)
 		@board_clicked = nil
 		@board_clicked = which_board_was_clicked(x, y)
-		#puts "#{@board_clicked}"
 		if(@board_clicked != nil)
-			#puts "running Which cell was clicked"
 			which_cell_was_clicked(@board_clicked, x, y)
 		end
 		
@@ -234,8 +247,6 @@ class Game
 		@click_x = x
 		@click_y = y
 
-		puts "#{@board_clicked}, #{@click_x}, #{@click_y}"
-
 		if(@board_clicked == "west")
 			0.upto(@map_west.rows-1) do |square_x|
 				0.upto(@map_west.cols-1) do |square_y|
@@ -243,7 +254,7 @@ class Game
 						#puts "square = #{square_x}, #{square_y} location = #{@map_west.map[square_x][square_y].location_on_screen_x}, #{@map_west.map[square_x][square_y].location_on_screen_y}"
 						
 						if(@click_x.between?(@map_west.map[square_x][square_y].location_on_screen_x, @map_west.map[square_x][square_y].location_on_screen_x + Map::SQUARE_SIZE) && @click_y.between?(@map_west.map[square_x][square_y].location_on_screen_y, @map_west.map[square_x][square_y].location_on_screen_y + Map::SQUARE_SIZE))
-							puts "clicked map west #{square_x}, #{square_y}"
+							puts "246 clicked map west #{square_x}, #{square_y} unit = #{@map_west.map[square_x][square_y].name}"
 						end
 					end
 				end
@@ -289,7 +300,7 @@ class Map
 		@location_y = (Map::SQUARE_SIZE * @col) + Game::BOARD_PADDING_Y
 		@unit.set_location_on_screen(@location_x, @location_y)
 		@map[@row][@col] = @unit
-		puts "292 #{@unit.name} square = #{@row}, #{@col}  #{@unit.get_location_on_screen}"
+		#puts "292 #{@unit.name} square = #{@row}, #{@col}  #{@unit.get_location_on_screen}"
 	end
 
 	def haveunit?(find_unit)
@@ -372,12 +383,13 @@ end
 
 class Game_piece
 	attr_reader :location_on_screen_x, :location_on_screen_y
+
 	def initialize(args)
 		@location_on_screen_x = 0
 		@location_on_screen_y = 0
 	end
 
-		def set_location_on_screen(x, y)
+	def set_location_on_screen(x, y)
 		@location_on_screen_x = x
 		@location_on_screen_y = y
 	end
@@ -395,7 +407,6 @@ class Unit < Game_piece
 		@movement_speed = 1
 		@attack_power = 1
 		@player = args['player']
-
 	end
 end
 
