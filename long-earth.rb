@@ -22,15 +22,15 @@ def draw
 end
 
 def mouseClicked
-	puts "Mouse clicked at #{mouseX}, #{mouseY}"
 	game.mouse_clicked(mouseX, mouseY)
-
 end
 
 class Game
 	BOARD_PADDING = 25
+	BOARD_PADDING_Y = 40
 	TITLE_TEXT_SIZE = 30
 	TITLE_TEXT_Y = 20
+
 	attr_reader :map_east, :map_datum, :map_west
 
 	def initialize()
@@ -45,21 +45,25 @@ class Game
 		@which_map = args['which_map']
 
 		case @which_map
-		when 'east'
-			@map_east.place_unit(args)
-		when 'datum'
-			@map_datum.place_unit(args)
 		when 'west'
+			args["padding_factor"] = (1 * BOARD_PADDING)
 			@map_west.place_unit(args)
+		when 'datum'
+			args["padding_factor"] = (2 * BOARD_PADDING) + (@map_east.rows * Map::SQUARE_SIZE)
+			@map_datum.place_unit(args)
+		when 'east'
+			args["padding_factor"] = (3 * BOARD_PADDING) + (@map_east.rows * Map::SQUARE_SIZE) + (@map_datum.rows * Map::SQUARE_SIZE)
+			@map_east.place_unit(args)
 		end
 	end
 
 	def print_all_maps()
-		@current_starting_x = 5
-		@current_starting_y = 40
+		@current_starting_x = BOARD_PADDING
+		@current_starting_y = BOARD_PADDING_Y
 
 		#print earth west
 		args = {"starting_x" => @current_starting_x, "starting_y" => @current_starting_y}
+		puts "printing west"
 		@map_west.print_map(args)
 		fill(255, 0, 0)
 		textSize(TITLE_TEXT_SIZE)
@@ -68,6 +72,7 @@ class Game
 		#print earth datum
 		@current_starting_x = @map_west.rows * Map::SQUARE_SIZE + @current_starting_x + BOARD_PADDING
 		args = {"starting_x" => @current_starting_x, "starting_y" => @current_starting_y}
+		puts "printing datum"
 		@map_datum.print_map(args)
 		fill(100,153,0)
 		textSize(TITLE_TEXT_SIZE)
@@ -76,6 +81,7 @@ class Game
 		#print earth east
 		@current_starting_x = @map_datum.rows * Map::SQUARE_SIZE + @current_starting_x + BOARD_PADDING
 		args = {"starting_x" => @current_starting_x, "starting_y" => @current_starting_y}
+		puts "printing east"
 		@map_east.print_map(args)
 		fill(255,153,150)
 		textSize(TITLE_TEXT_SIZE)
@@ -112,7 +118,7 @@ class Game
 			@map_east.remove_unit(@unit_name)
 		end
 		
-		#put into new locatin
+		#put into new location
 		@new_x = args['new_x']
 		@new_y = args['new_y']
 		@to_map = args['to_map']
@@ -127,36 +133,36 @@ class Game
 		a3 = Human.new({"name" => "A3", "player" => 1})
 		place_unit_on_map({"unit" => a3, "x" => 2, "y" => 9, "which_map" => "datum"})
 		a4 = Human.new({"name" => "A4", "player" => 1})
-		place_unit_on_map({"unit" => a1, "x" => 3, "y" => 9, "which_map" => "datum"})
+		place_unit_on_map({"unit" => a4, "x" => 3, "y" => 9, "which_map" => "datum"})
 		a5 = Human.new({"name" => "A5", "player" => 1})
-		place_unit_on_map({"unit" => a2, "x" => 5, "y" => 9, "which_map" => "datum"})
-		a6 = Human.new({"name" => "A3", "player" => 1})
-		place_unit_on_map({"unit" => a3, "x" => 6, "y" => 9, "which_map" => "datum"})
+		place_unit_on_map({"unit" => a5, "x" => 5, "y" => 9, "which_map" => "datum"})
+		a6 = Human.new({"name" => "A6", "player" => 1})
+		place_unit_on_map({"unit" => a6, "x" => 6, "y" => 9, "which_map" => "datum"})
 		a7 = Human.new({"name" => "A7", "player" => 1})
-		place_unit_on_map({"unit" => a1, "x" => 7, "y" => 9, "which_map" => "datum"})
+		place_unit_on_map({"unit" => a7, "x" => 7, "y" => 9, "which_map" => "datum"})
 		a8 = Human.new({"name" => "A8", "player" => 1})
-		place_unit_on_map({"unit" => a2, "x" => 8, "y" => 9, "which_map" => "datum"})
+		place_unit_on_map({"unit" => a8, "x" => 8, "y" => 9, "which_map" => "datum"})
 		a9 = Human.new({"name" => "A9", "player" => 1})
-		place_unit_on_map({"unit" => a3, "x" => 9, "y" => 9, "which_map" => "datum"})
+		place_unit_on_map({"unit" => a9, "x" => 9, "y" => 9, "which_map" => "datum"})
 
 		b1 = LongEarther.new({"name" => "B1", "player" => 2})
 		place_unit_on_map({"unit" => b1, "x" => 0, "y" => 0, "which_map" => "west"})
 		b2 = LongEarther.new({"name" => "B2", "player" => 2})
-		place_unit_on_map({"unit" => b1, "x" => 1, "y" => 0, "which_map" => "west"})
+		place_unit_on_map({"unit" => b2, "x" => 1, "y" => 0, "which_map" => "west"})
 		b3 = LongEarther.new({"name" => "B3", "player" => 2})
-		place_unit_on_map({"unit" => b1, "x" => 3, "y" => 0, "which_map" => "west"})
+		place_unit_on_map({"unit" => b3, "x" => 3, "y" => 0, "which_map" => "west"})
 		b4 = LongEarther.new({"name" => "B4", "player" => 2})
-		place_unit_on_map({"unit" => b1, "x" => 4, "y" => 0, "which_map" => "west"})
+		place_unit_on_map({"unit" => b4, "x" => 4, "y" => 0, "which_map" => "west"})
 		b5 = LongEarther.new({"name" => "B5", "player" => 2})
-		place_unit_on_map({"unit" => b1, "x" => 0, "y" => 1, "which_map" => "west"})
+		place_unit_on_map({"unit" => b5, "x" => 0, "y" => 1, "which_map" => "west"})
 		b6 = LongEarther.new({"name" => "B6", "player" => 2})
-		place_unit_on_map({"unit" => b1, "x" => 1, "y" => 1, "which_map" => "west"})
+		place_unit_on_map({"unit" => b6, "x" => 1, "y" => 1, "which_map" => "west"})
 		b7 = LongEarther.new({"name" => "B7", "player" => 2})
-		place_unit_on_map({"unit" => b1, "x" => 2, "y" => 1, "which_map" => "west"})
+		place_unit_on_map({"unit" => b7, "x" => 2, "y" => 1, "which_map" => "west"})
 		b8 = LongEarther.new({"name" => "B8", "player" => 2})
-		place_unit_on_map({"unit" => b1, "x" => 3, "y" => 1, "which_map" => "west"})
+		place_unit_on_map({"unit" => b8, "x" => 3, "y" => 1, "which_map" => "west"})
 		b9 = LongEarther.new({"name" => "B9", "player" => 2})
-		place_unit_on_map({"unit" => b1, "x" => 4, "y" => 1, "which_map" => "west"})
+		place_unit_on_map({"unit" => b9, "x" => 4, "y" => 1, "which_map" => "west"})
 
 		rock = Terrain.new("rock")
 		place_unit_on_map({"unit" => rock, "x" => 2, "y" => 0, "which_map" => "datum"})
@@ -183,7 +189,14 @@ class Game
 	end
 
 	def mouse_clicked(x, y)
-		which_board_was_clicked(x, y)
+		@board_clicked = nil
+		@board_clicked = which_board_was_clicked(x, y)
+		#puts "#{@board_clicked}"
+		if(@board_clicked != nil)
+			#puts "running Which cell was clicked"
+			which_cell_was_clicked(@board_clicked, x, y)
+		end
+		
 	end
 
 	def which_board_was_clicked(x, y)
@@ -196,7 +209,7 @@ class Game
 		@bottom_right[0] = @top_left[0] + (@map_west.rows * Map::SQUARE_SIZE)
 		@bottom_right[1] = @top_left[1] + (@map_west.cols * Map::SQUARE_SIZE)
 		if(x.between?(@top_left[0], @bottom_right[0]) && y.between?(@top_left[1], @bottom_right[1]))
-			puts "clicked on map west"
+			return "west"
 		end
 		
 		@top_left[0] = @map_datum.starting_x
@@ -204,7 +217,7 @@ class Game
 		@bottom_right[0] = @top_left[0] + (@map_datum.rows * Map::SQUARE_SIZE)
 		@bottom_right[1] = @top_left[1] + (@map_datum.cols * Map::SQUARE_SIZE)
 		if(x.between?(@top_left[0], @bottom_right[0]) && y.between?(@top_left[1], @bottom_right[1]))
-				puts "clicked on map datum"
+				return "datum"
 		end	
 
 		@top_left[0] = @map_east.starting_x
@@ -212,9 +225,30 @@ class Game
 		@bottom_right[0] = @top_left[0] + (@map_east.rows * Map::SQUARE_SIZE)
 		@bottom_right[1] = @top_left[1] + (@map_east.cols * Map::SQUARE_SIZE)
 		if(x.between?(@top_left[0], @bottom_right[0]) && y.between?(@top_left[1], @bottom_right[1]))
-				puts "clicked on map east"
+				return "east"
 		end	
+	end
 
+	def which_cell_was_clicked(board_clicked, x, y)
+		@board_clicked = board_clicked
+		@click_x = x
+		@click_y = y
+
+		puts "#{@board_clicked}, #{@click_x}, #{@click_y}"
+
+		if(@board_clicked == "west")
+			0.upto(@map_west.rows-1) do |square_x|
+				0.upto(@map_west.cols-1) do |square_y|
+					if(@map_west.map[square_x][square_y] != nil)
+						#puts "square = #{square_x}, #{square_y} location = #{@map_west.map[square_x][square_y].location_on_screen_x}, #{@map_west.map[square_x][square_y].location_on_screen_y}"
+						
+						if(@click_x.between?(@map_west.map[square_x][square_y].location_on_screen_x, @map_west.map[square_x][square_y].location_on_screen_x + Map::SQUARE_SIZE) && @click_y.between?(@map_west.map[square_x][square_y].location_on_screen_y, @map_west.map[square_x][square_y].location_on_screen_y + Map::SQUARE_SIZE))
+							puts "clicked map west #{square_x}, #{square_y}"
+						end
+					end
+				end
+			end
+		end
 	end
 
 	def tests()
@@ -250,7 +284,12 @@ class Map
 		@unit = args['unit']
 		@row = args['x']
 		@col = args['y']
+		@factor = args["padding_factor"]
+		@location_x = (Map::SQUARE_SIZE * @row) + @factor
+		@location_y = (Map::SQUARE_SIZE * @col) + Game::BOARD_PADDING_Y
+		@unit.set_location_on_screen(@location_x, @location_y)
 		@map[@row][@col] = @unit
+		puts "292 #{@unit.name} square = #{@row}, #{@col}  #{@unit.get_location_on_screen}"
 	end
 
 	def haveunit?(find_unit)
@@ -323,7 +362,7 @@ class Map
 		rect(@square_location["x"], @square_location["y"], SQUARE_SIZE, SQUARE_SIZE)
 		fill(125)
 		if(@map[args["x"]][args["y"]] != nil)
-			@map[args["x"]][args["y"]].set_location_on_screen(@square_location["x"], @square_location["y"])
+			puts "square = #{args["x"]}, #{args["y"]} location = #{@map[args["x"]][args["y"]].location_on_screen_x}, #{@map[args["x"]][args["y"]].location_on_screen_y}"
 			text(@map[args["x"]][args["y"]].name, @square_location["x"] + (SQUARE_SIZE/2), @square_location["y"] + (SQUARE_SIZE/2) - 10)
 			text(@map[args["x"]][args["y"]].location_on_screen_x, @square_location["x"] + (SQUARE_SIZE/2), @square_location["y"] + (SQUARE_SIZE/2))
 			text(@map[args["x"]][args["y"]].location_on_screen_y, @square_location["x"] + (SQUARE_SIZE/2), @square_location["y"] + (SQUARE_SIZE/2) + 10)
